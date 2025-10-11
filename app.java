@@ -9,15 +9,15 @@ import java.util.Scanner;
 
 public class app {
     public static List<String> loadWordBank(String filePath) throws IOException{
+        //Initialize new array of string
         List<String> words = new ArrayList<>();
+        
 
         try(BufferedReader br = new BufferedReader(new FileReader(filePath))){
             String word;
 
             while ((word = br.readLine()) != null){
-                if (word.length() == 5 && word.matches("[a-z]+")) {
-                    words.add(word); 
-                }
+                words.add(word); 
             }
         }
         
@@ -52,7 +52,11 @@ public class app {
     }
 
     public static void SinglePlayerMode(String word) {
-        
+
+        for (int i = 0; i < 6; i++){
+            System.out.println("------");
+        }
+
     }
 
     public static void main(String[] args) throws IOException{
