@@ -91,6 +91,16 @@ public class app {
         return jsonResponse.startsWith("[{");
     }
 
+    public static String checkGuess(String guess, char[] key){
+        for (int i = 0; i < guess.length(); i ++){
+            char c = guess.charAt(i);
+            
+        }
+
+
+        return "hi";
+    }
+
     public static void SinglePlayerMode(char[] key, Scanner input) {
         List<String> guesses = new ArrayList<>();
 
@@ -101,11 +111,10 @@ public class app {
                 Wait(500);
                 if (i < guesses.size()) {
                     System.out.println(guesses.get(i));
-                    System.out.println("----------------------------");
                 } else {
                     System.out.println("[ ]   [ ]   [ ]   [ ]   [ ]");
-                    System.out.println("----------------------------");
-                }
+                }                
+                System.out.println("----------------------------");
             }
 
             for (int i = 0; i < 3; i++) {
@@ -122,12 +131,10 @@ public class app {
 
                 // Prompts user for guess
                 guess = input.nextLine();
-                // Turns the guess into an array of chars
-                char[] guess_array = guess.toCharArray();
 
                 // Checks if user guess is less than 5 characters and has no special chars
                 // Saves API calls
-                if (guess_array.length != 5 || !specialCharCheck(guess)) {
+                if (guess.length() != 5 || !specialCharCheck(guess)) {
                     System.out.println(
                             "Please enter a valid word that is 5 letters long. Words will special characters are not valid.");
                     continue;
@@ -143,7 +150,9 @@ public class app {
                 isValid = true;
             }
 
-            guesses.add(guess);
+            String fancyGuess = checkGuess(guess, key);
+
+            guesses.add(fancyGuess);
             Clear();
         }
     }
