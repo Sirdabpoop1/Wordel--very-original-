@@ -10,11 +10,12 @@ public class Server {
     public static Powerup getPowerup() {
         // Creates a powerup object at random
         String[] names = { "The KEYS to the Cheese Factory", "The Hash-Slinging Slasher", "10L Coffee Cup",
-                "Standing Up School Application" };
+                "Standing Up School Application", "YoHoHo's Shiny Right Hook" };
         String[] powerupDesc = { "Gives you one letter",
                 "Secretly makes your opponent's next guess give random information",
                 "You get 2 turns for the price of 1",
-                "Changes your opponent's word" };
+                "Changes your opponent's word",
+                "See your opponent's last used guess"};
         Random rand = new Random();
         int i = rand.nextInt(names.length);
         return new Powerup(names[i], powerupDesc[i]);
