@@ -82,14 +82,16 @@ public class Server {
                     "The KEYS to the Cheese Factory",
                     "The Hash-Slinging Slasher",
                     "10L Coffee Cup",
-                    "Standing Up School Application"));
+                    "Standing Up School Application",
+                    "YoHoHo's Shiny Right Hook"));
 
             // Send messages to commence le game
             current.sendMessage("CLEAR");
+            other.sendMessage("CLEAR");
             current.sendMessage("You're up! It is turn " + numturn + "\n");
             other.sendMessage("Waiting for " + current.getName() + " to play...");
             // Checks if current has powerups
-            if (current.getBackpack().returnPowerups().size() > 0) {
+            if (!current.getBackpack().returnPowerups().isEmpty()) {
                 // Prompts to see if they would like to use
                 current.sendMessage("Would you like to use a powerup? Yes/No");
                 String isUsing = current.readClient();
@@ -97,9 +99,9 @@ public class Server {
                     // Prints current backpack full of powerups
                     current.getBackpack().sendPowerups(current);
                     // Prompts for a powerup and applies effects in Powerup.java class
-                    current.sendMessage("Pick a powerup to use! Enter it by name: ");
+                    current.sendMessage("Pick a powerup to use! Enter it its row number: ");
                     String choice = current.readClient().trim();
-                    while (!powerupNames.contains(choice)) {
+                    while (Integer.parseInt(choice) > current.getBackpack().returnPowerups().size() || Integer.parseInt(choice) < 1) {
                         current.sendMessage("Please enter a valid powerup: ");
                         choice = current.readClient().trim();
                     }
@@ -166,6 +168,7 @@ public class Server {
                 other.sendMessage(current.getName() + " guessed! They have " + results[1]
                         + " correct letters in the right place and " + results[2]
                         + " correct letters in the wrong place");
+                App.Wait(2000);
                 p1Turn = !p1Turn;
             }
         }

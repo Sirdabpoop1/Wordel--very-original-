@@ -177,7 +177,7 @@ public class App {
         System.out.println("Searching for an opponent...");
         try {
             // Creates TCP socket
-            Socket socket = new Socket("10.2.225.253", 12345);
+            Socket socket = new Socket("localhost", 12345);
             // Creates reader in order to recieve messages from the server
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             // Creates a writer in order to send messages to the server

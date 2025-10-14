@@ -27,7 +27,7 @@ public class Backpack {
         current.sendMessage("Powerups in your backpack:");
         for (int i = 0; i < powerups.size(); i++) {
             Powerup p = powerups.get(i);
-            current.sendMessage("- " + p.getName() + ": " + p.getDescription());
+            current.sendMessage(i++ + ". " + p.getName() + ": " + p.getDescription());
         }
         current.sendMessage("\n");
     }

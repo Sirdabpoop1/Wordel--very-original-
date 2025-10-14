@@ -30,12 +30,15 @@ public class Powerup {
                 break;
             case "10L Coffee Cup":
                 skipTurn(player, other);
-                player.sendMessage("Your opponent’s turn was skipped!");
+                player.sendMessage("Your opponent's turn was skipped!");
                 break;
             case "Standing Up School Application":
                 swapWord(player, other, bank);
-                player.sendMessage("Your opponent’s word was swapped!");
+                player.sendMessage("Your opponent's word was swapped!");
                 break;
+            case "YoHoHo's Shiny Right Hook":
+                List<String> guesses = other.getGuesses();
+                player.sendMessage("Your opponent's last guess was " + guesses.get(guesses.size() - 1).toUpperCase());
         }
     }
 
