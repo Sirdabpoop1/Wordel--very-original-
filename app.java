@@ -1,23 +1,11 @@
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
-public class app {
-
-    private static final String API = "86f5283d-2fe4-4ab7-95fc-a488e53f246b";
-    private static final String baseURL = "https://dictionaryapi.com/api/v3/references/thesaurus/json/";
+public class App {
 
     public static List<String> loadWordBank(String filePath) throws IOException {
-        // Initialize new array of string
+        // Define new array of string
         List<String> words = new ArrayList<>();
 
         // Attempt reading the file
@@ -59,49 +47,76 @@ public class app {
         }
     }
 
-    // Returns true if guess does NOT have any special chars
-    public static boolean specialCharCheck(String guess) {
-        return guess.matches("^[a-zA-Z]+$");
-    }
+    public static boolean isWord(String guess, List<String> words) {
 
-    public static boolean isWord(String guess) {
-        String jsonResponse = "";
-
-        try {
-            // Initialize client
-            HttpClient client = HttpClient.newHttpClient();
-            String url = baseURL + guess + "?key=" + API;
-            // Create request to Merriam API
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
-
-            // Gets server's response
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // Checks if the status code is good
-            if (response.statusCode() == 200) {
-                // Gets the main part of the response
-                jsonResponse = response.body();
-            }
-        } catch (Exception e) {
-            System.out.println("API call failed");
+        if (words.contains(guess.toLowerCase())) {
+            return true;
+        } else {
+            return false;
         }
-
-        // Returns true if the response starts with [{, since all existing words return
-        // jsons with [{ at the start,
-        // while words that don't exist return jsons with [" or [] at the start
-        return jsonResponse.startsWith("[{");
     }
 
-    public static String checkGuess(String guess, char[] key){
-        for (int i = 0; i < guess.length(); i ++){
+    public static String[] checkGuess(String guess, char[] key, boolean GOTEMS) {
+        // Initialize StringBuilder
+        StringBuilder answer = new StringBuilder();
+        List<Character> guessbuild = new ArrayList<>();
+
+        String GREEN = "\u001B[32m";
+        String YELLOW = "\u001B[33m";
+        String RESET = "\u001B[0m";
+
+        int greencount = 0;
+        int yellowcount = 0;
+
+        for (int i = 0; i < guess.length(); i++) {
             char c = guess.charAt(i);
-            
+
+            // Checks the frequency of the guessed letter in key
+            int count = 0;
+
+            for (int k = 0; k < key.length; k++) {
+                if (key[k] == c) {
+                    count++;
+                }
+            }
+
+            // Checks if char is in the right letter and in the right position
+            if (c == key[i]) {
+                answer.append(GREEN).append(c).append(RESET);
+                greencount++;
+                // Checks if char is in the answer. Checking if frequency of the letter in
+                // guessbuild is less than count ensures no repeated yellows
+            } else if (new String(key).indexOf(c) != -1 && Collections.frequency(guessbuild, c) < count) {
+                answer.append(YELLOW).append(c).append(RESET);
+                yellowcount++;
+            } else {
+                answer.append(RESET).append(c);
+            }
+
+            answer.append("   ");
+            // Appends the newest character to guessbuild
+            guessbuild.add(c);
         }
-
-
-        return "hi";
+        // If all 5 letters are green, then the word is solved and GOTEMS is set to
+        // true!
+        if (greencount == guess.length()) {
+            GOTEMS = true;
+        }
+        return new String[] { answer.toString(), String.valueOf(greencount), String.valueOf(yellowcount),
+                String.valueOf(GOTEMS) };
     }
 
-    public static void SinglePlayerMode(char[] key, Scanner input) {
+    public static void baseGame(Scanner input) throws IOException {
+
+        boolean GOTEMS = false;
+
+        // Gets the wordbank, which then gets the random word
+        List<String> bank = loadWordBank("wordbank.txt");
+        String word = getRandomWord(bank);
+        word = word.toUpperCase();
+        // Converts into an array of chars
+        char[] key = word.toCharArray();
+
         List<String> guesses = new ArrayList<>();
 
         for (int x = 0; x < 7; x++) {
@@ -113,12 +128,21 @@ public class app {
                     System.out.println(guesses.get(i));
                 } else {
                     System.out.println("[ ]   [ ]   [ ]   [ ]   [ ]");
-                }                
+                }
                 System.out.println("----------------------------");
             }
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 System.out.println();
+            }
+
+            if (GOTEMS) {
+                System.out.println("YOU WON!!! The word was " + new String(key));
+                Wait(2000);
+                return;
+            } else if (!GOTEMS && x == 6) {
+                System.out.println("OOOOOOOOOH YOU LOOOOOSSEEEE (noob)!!! The word was " + new String(key));
+                return;
             }
 
             String guess = ""; // Cuz dumb java initialization logic
@@ -131,29 +155,66 @@ public class app {
 
                 // Prompts user for guess
                 guess = input.nextLine();
-
-                // Checks if user guess is less than 5 characters and has no special chars
-                // Saves API calls
-                if (guess.length() != 5 || !specialCharCheck(guess)) {
+                if (!isWord(guess, bank)) {
                     System.out.println(
                             "Please enter a valid word that is 5 letters long. Words will special characters are not valid.");
-                    continue;
+                } else {
+                    isValid = true;
                 }
-
-                // API check to see if word exists
-                else if (!isWord(guess)) {
-                    System.out.println(
-                            "Please enter a valid word that is 5 letters long. Words will special characters are not valid.");
-                    continue;
-                }
-                // If all conditions are met, set isValid to true
-                isValid = true;
             }
 
-            String fancyGuess = checkGuess(guess, key);
+            guess = guess.toUpperCase();
+            String[] fancyGuess = checkGuess(guess, key, GOTEMS);
 
-            guesses.add(fancyGuess);
+            guesses.add(fancyGuess[0]);
+            GOTEMS = Boolean.parseBoolean(fancyGuess[3]);
             Clear();
+        }
+
+    }
+
+    public static void multiplayerTime(Scanner input) {
+        System.out.println("Searching for an opponent...");
+        try {
+            // Creates TCP socket
+            Socket socket = new Socket("localhost", 12345);
+            // Creates reader in order to recieve messages from the server
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            // Creates a writer in order to send messages to the server
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+
+            // Creates a new thread running in paralell with the rest of the program.
+            Thread listener = new Thread(new Runnable() {
+                @Override
+                // Continually executes public void run
+                public void run() {
+                    try {
+                        String line;
+                        // Reads the messages from the server and prints it in client terminal
+                        while ((line = in.readLine()) != null) {
+                            // If server sends the message CLEAR
+                            if (line.equalsIgnoreCase("CLEAR")) {
+                                Clear();
+                            } else {
+                                System.out.println(line);
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.out.println("Disconnected from server");
+                    }
+                }
+            });
+            // Runs the thread
+            listener.start();
+            // Continuously sends input that the user types (after clicking enter) to the
+            // server
+            while (true) {
+                String inputLine = input.nextLine();
+                out.println(inputLine);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Unable to find an opponent :(" + e.getMessage());
         }
     }
 
@@ -183,21 +244,16 @@ public class app {
             }
         }
 
-        // Gets the wordbank, which then gets the random word
-        List<String> bank = loadWordBank("wordbank.txt");
-        String word = getRandomWord(bank);
-        // Converts into an array of chars
-        char[] key = word.toCharArray();
-
         // Fun fluff text
         if (playercount == 1) {
             System.out.println("Entering 1 player mode...");
             Wait(1300);
             Clear();
-            SinglePlayerMode(key, input);
+            baseGame(input);
         } else {
             System.out.println("Entering 2 player mode...");
             Wait(1300);
+            multiplayerTime(input);
             Clear();
         }
     }
