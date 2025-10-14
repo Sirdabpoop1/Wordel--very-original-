@@ -21,6 +21,23 @@ public class App {
         return words;
     }
 
+    public static List<String> loadGuessBank(String filePath) throws IOException {
+        // Define new array of string
+        List<String> words = new ArrayList<>();
+
+        // Attempt reading the file
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            // Adds words from the file into the list until there are no more words
+            String word;
+
+            while ((word = br.readLine()) != null) {
+                words.add(word);
+            }
+        }
+
+        return words;
+    }
+
     public static String getRandomWord(List<String> words) {
         if (words.isEmpty()) {
             throw new IllegalArgumentException("no words");
@@ -110,6 +127,8 @@ public class App {
 
         boolean GOTEMS = false;
 
+        List<String> guessBank = loadGuessBank("guessbank.txt");
+
         // Gets the wordbank, which then gets the random word
         List<String> bank = loadWordBank("wordbank.txt");
         String word = getRandomWord(bank);
@@ -155,7 +174,7 @@ public class App {
 
                 // Prompts user for guess
                 guess = input.nextLine();
-                if (!isWord(guess, bank)) {
+                if (!isWord(guess, guessBank)) {
                     System.out.println(
                             "Please enter a valid word that is 5 letters long. Words will special characters are not valid.");
                 } else {

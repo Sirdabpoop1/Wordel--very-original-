@@ -9,6 +9,7 @@ public class Player {
     private PrintWriter out;
     private String name;
     private List<String> guesses = new ArrayList<>();
+    private List<String> formattedGuesses = new ArrayList<>();
     private boolean isSkipped = false;
     private boolean isLost = false;
     private String word;
@@ -62,6 +63,14 @@ public class Player {
 
     public List<String> getGuesses() {
         return guesses;
+    }
+
+    public List<String> getFormattedGuesses() {
+        return formattedGuesses;
+    }
+
+    public void addFormattedGuesses(String guess) {
+        formattedGuesses.add(guess);
     }
 
     public boolean isSkipped() {

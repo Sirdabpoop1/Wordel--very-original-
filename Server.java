@@ -28,6 +28,8 @@ public class Server {
         ServerSocket serverSocket = new ServerSocket(PORT);
         // Loads wordbank
         List<String> bank = App.loadWordBank("wordbank.txt");
+        //Loads guessbank
+        List<String> guessBank = App.loadGuessBank("guessbank.txt");
 
         // Checks for when 2 players connect to the socket
         Socket p1Socket = serverSocket.accept();
@@ -105,8 +107,8 @@ public class Server {
                 }
             }
 
-            for (int i = 0; i < current.getGuesses().size(); i++) {
-                current.sendMessage(current.getGuesses().get(i));
+            for (int i = 0; i < current.getFormattedGuesses().size(); i++) {
+                current.sendMessage(current.getFormattedGuesses().get(i));
                 current.sendMessage("---------------------------------");
                 App.Wait(1000);
             }
@@ -119,7 +121,7 @@ public class Server {
             // Guess check logic
             while (!isValid) {
                 guess = current.readClient();
-                if (!App.isWord(guess, bank)) {
+                if (!App.isWord(guess, guessBank)) {
                     current.sendMessage(
                             "Please enter a valid guess of a 5 letter word that exists in the English dictionary");
                 } else {
@@ -128,36 +130,50 @@ public class Server {
             }
 
             guess = guess.toUpperCase();
-
+            current.sendMessage("CLEAR");
             boolean GOTEMS = false;
-            String[] results = new String[3];
+            String[] results = new String[4];
             // Check guess after accounting for confusion
             if (current.isLost()) {
                 Random rand = new Random();
                 int randIndex = rand.nextInt(bank.size());
                 String randGuess = bank.get(randIndex);
-                results = App.checkGuess(randGuess, current.getWord().toCharArray(), GOTEMS);
-                current.setLost(false);
+                results = App.checkGuess(randGuess.toUpperCase(), current.getWord().toCharArray(), GOTEMS);
+                current.addGuess(randGuess);
             } else {
                 results = App.checkGuess(guess, current.getWord().toCharArray(), GOTEMS);
+                current.addGuess(guess);
             }
-            current.addGuess(results[0]);
+
+            GOTEMS = Boolean.parseBoolean(results[3]);
+            
+            current.addFormattedGuesses(results[0]);
+
+            if (current.isLost()){
+                current.sendMessage("\n");
+                current.sendMessage("YOU HAVE BEEN CONFUZZLED!");
+                current.sendMessage("\n");
+                current.setLost(false);
+            }
+
             // Return past guesses + current guess
-            for (int i = 0; i < current.getGuesses().size(); i++) {
-                current.sendMessage(current.getGuesses().get(i));
+            for (int i = 0; i < current.getFormattedGuesses().size(); i++) {
+                current.sendMessage(current.getFormattedGuesses().get(i));
                 current.sendMessage("---------------------------------");
                 App.Wait(1000);
             }
+            current.sendMessage(current.getWord());
             if (GOTEMS) {
                 // Send victory and defeat messages
                 current.sendMessage("\n");
-                current.sendMessage("CONGRATS! YOU HAVE WON BY GUESSING THE WORD! The word was " + word);
+                current.sendMessage("CONGRATS! YOU HAVE WON BY GUESSING THE WORD! The word was " + current.getWord());
                 Random rand = new Random();
                 int funnyIndex = rand.nextInt(funnyWordList.length);
                 String funny = funnyWordList[funnyIndex];
                 other.sendMessage("\n");
                 other.sendMessage("You have been " + funny + " by the likes of " + current.getName()
                         + "! Better luck next time :(");
+                other.sendMessage("The word was " + current.getWord());
 
                 gameOver = true;
             } else {
