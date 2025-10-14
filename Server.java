@@ -78,13 +78,6 @@ public class Server {
                 continue;
             }
 
-            ArrayList<String> powerupNames = new ArrayList<>(Arrays.asList(
-                    "The KEYS to the Cheese Factory",
-                    "The Hash-Slinging Slasher",
-                    "10L Coffee Cup",
-                    "Standing Up School Application",
-                    "YoHoHo's Shiny Right Hook"));
-
             // Send messages to commence le game
             current.sendMessage("CLEAR");
             other.sendMessage("CLEAR");
@@ -105,10 +98,19 @@ public class Server {
                         current.sendMessage("Please enter a valid powerup: ");
                         choice = current.readClient().trim();
                     }
-                    current.getBackpack().usePowerup(choice, current, other, bank, word.toCharArray());
+                    Powerup selected = current.getBackpack().returnPowerups().get(Integer.parseInt(choice)-1);
+                    String name = selected.getName();
+                    current.getBackpack().usePowerup(name, current, other, bank, word.toCharArray());
                     current.sendMessage("\n");
                 }
             }
+
+            for (int i = 0; i < current.getGuesses().size(); i++) {
+                current.sendMessage(current.getGuesses().get(i));
+                current.sendMessage("---------------------------------");
+                App.Wait(1000);
+            }
+            current.sendMessage("\n");
 
             current.sendMessage("Please enter your guess");
 
