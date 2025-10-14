@@ -168,7 +168,7 @@ public class Server {
                 other.sendMessage(current.getName() + " guessed! They have " + results[1]
                         + " correct letters in the right place and " + results[2]
                         + " correct letters in the wrong place");
-                App.Wait(2000);
+                App.Wait(4000);
                 p1Turn = !p1Turn;
             }
         }

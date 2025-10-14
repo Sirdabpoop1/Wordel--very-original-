@@ -19,7 +19,7 @@ public class Backpack {
                 return;
             }
         }
-        player.sendMessage("You don’t have that powerup! Please choose another!");
+        player.sendMessage("You don't have that powerup! Please choose another!");
     }
 
     public void sendPowerups(Player current) {
@@ -27,7 +27,9 @@ public class Backpack {
         current.sendMessage("Powerups in your backpack:");
         for (int i = 0; i < powerups.size(); i++) {
             Powerup p = powerups.get(i);
-            current.sendMessage(i++ + ". " + p.getName() + ": " + p.getDescription());
+            i++;
+            current.sendMessage(i + ". " + p.getName() + ": " + p.getDescription());
+            i--;
         }
         current.sendMessage("\n");
     }
