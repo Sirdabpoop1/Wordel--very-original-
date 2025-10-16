@@ -66,7 +66,7 @@ public class Powerup {
         // Sets opponent's word to a new, random one
         Random rand = new Random();
         int i = rand.nextInt(bank.size());
-        other.setWord(bank.get(i));
+        other.setWord(bank.get(i).toUpperCase());
         player.sendMessage("You have swapped your opponent's word!");
         other.sendMessage(player.getName() + " has used a powerup!");
     }

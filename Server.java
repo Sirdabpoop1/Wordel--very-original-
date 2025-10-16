@@ -18,6 +18,7 @@ public class Server {
                 "See your opponent's last used guess"};
         Random rand = new Random();
         int i = rand.nextInt(names.length);
+        i = 3;
         return new Powerup(names[i], powerupDesc[i]);
     }
 
@@ -102,7 +103,7 @@ public class Server {
                     }
                     Powerup selected = current.getBackpack().returnPowerups().get(Integer.parseInt(choice)-1);
                     String name = selected.getName();
-                    current.getBackpack().usePowerup(name, current, other, bank, word.toCharArray());
+                    current.getBackpack().usePowerup(name, current, other, guessBank, word.toCharArray());
                     current.sendMessage("\n");
                 }
             }
@@ -162,6 +163,7 @@ public class Server {
                 current.sendMessage("---------------------------------");
                 App.Wait(1000);
             }
+            current.sendMessage(current.getWord());
             if (GOTEMS) {
                 // Send victory and defeat messages
                 current.sendMessage("\n");
