@@ -12,7 +12,7 @@ public class Server {
         String[] names = { "The KEYS to the Cheese Factory", "The Hash-Slinging Slasher", "10L Coffee Cup",
                 "Standing Up School Application", "YoHoHo's Shiny Right Hook" };
         String[] powerupDesc = { "Gives you one letter",
-                "Secretly makes your opponent's next guess give random information",
+                "Makes your opponent's next guess give random information",
                 "You get 2 turns for the price of 1",
                 "Changes your opponent's word",
                 "See your opponent's last used guess"};
