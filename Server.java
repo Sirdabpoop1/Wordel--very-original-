@@ -162,7 +162,6 @@ public class Server {
                 current.sendMessage("---------------------------------");
                 App.Wait(1000);
             }
-            current.sendMessage(current.getWord());
             if (GOTEMS) {
                 // Send victory and defeat messages
                 current.sendMessage("\n");
